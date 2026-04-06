@@ -7,7 +7,7 @@ local Lighting = game:GetService("Lighting")
 local CHECK_INTERVAL = 0.3
 local TELEPORT_DISTANCE = 0
 
--- Настройки
+-- Settings
 local briefcaseEnabled = false
 local allGunsEnabled = false
 local exceptL106Enabled = false
@@ -20,12 +20,12 @@ local flyEnabled = false
 local fullbrightEnabled = false
 local antiFallDamageEnabled = true
 
--- Бесконечный телепорт
+-- Infinite Teleport
 local infiniteTPEnabled = false
 local targetPlayerName = ""
 local infiniteTPConnection = nil
 
--- Fling All (ПОЛНОСТЬЮ ИСПРАВЛЕНО)
+-- Fling All
 local flingAllEnabled = false
 local flingNoClipConnection = nil
 local flingLoopConnection = nil
@@ -42,7 +42,7 @@ local originalClockTime = Lighting.ClockTime
 local originalFogEnd = Lighting.FogEnd
 local originalGlobalShadows = Lighting.GlobalShadows
 
--- Названия объектов
+-- Object Names
 local briefcaseNames = {"Briefcase"}
 local allGunsNames = {"L106", "AS-VAL", "M4A1", "AK-74M"}
 local vestNames = {"Vest", "Tactical"}
@@ -113,7 +113,7 @@ local function createToggle(yOffset, text, callback)
     end)
 end
 
--- Тогглы
+-- Toggles
 createToggle(45, "(Briefcase)", function(state) briefcaseEnabled = state end)
 createToggle(85, "(All Guns: L106 + AS-VAL + M4A1 + AK-74M)", function(state) allGunsEnabled = state end)
 createToggle(125, "(Guns EXCEPT L106: AS-VAL + M4A1 + AK-74M)", function(state) exceptL106Enabled = state end)
@@ -129,7 +129,7 @@ createToggle(365, "Jumper Fly", function(state)
         if flyConnection then flyConnection:Disconnect() flyConnection = nil end
     end
 end)
-createToggle(405, "Anti Fall Damage (НЕВИДИМАЯ ПЛАТФОРМА)", function(state)
+createToggle(405, "Anti Fall Damage (Invisible Platform)", function(state)
     antiFallDamageEnabled = state
     toggleAntiFallDamage(state)
 end)
@@ -149,9 +149,9 @@ createToggle(445, "FullBright", function(state)
         Lighting.GlobalShadows = originalGlobalShadows
     end
 end)
-createToggle(485, "Fling All Players (выкидывать всех)", function(state) flingAllEnabled = state end)
+createToggle(485, "Fling All Players", function(state) flingAllEnabled = state end)
 
--- ====================== БЕСКОНЕЧНЫЙ ТЕЛЕПОРТ К ИГРОКУ =======================
+-- ====================== INFINITE TELEPORT TO PLAYER =======================
 local infiniteTPFrame = Instance.new("Frame")
 infiniteTPFrame.Size = UDim2.new(0.92, 0, 0, 260)
 infiniteTPFrame.Position = UDim2.new(0.04, 0, 0, 530)
@@ -161,7 +161,7 @@ infiniteTPFrame.Parent = MainFrame
 local infiniteTPLabel = Instance.new("TextLabel")
 infiniteTPLabel.Size = UDim2.new(1, 0, 0, 28)
 infiniteTPLabel.BackgroundTransparency = 1
-infiniteTPLabel.Text = "Бесконечный TP к игроку"
+infiniteTPLabel.Text = "Infinite TP to Player"
 infiniteTPLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 infiniteTPLabel.Font = Enum.Font.GothamBold
 infiniteTPLabel.TextSize = 14
@@ -171,7 +171,7 @@ local searchBox = Instance.new("TextBox")
 searchBox.Size = UDim2.new(0.92, 0, 0, 32)
 searchBox.Position = UDim2.new(0.04, 0, 0, 33)
 searchBox.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-searchBox.Text = "Поиск игрока..."
+searchBox.Text = "Search player..."
 searchBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 searchBox.Font = Enum.Font.Gotham
 searchBox.TextSize = 14
@@ -193,7 +193,7 @@ local selectedLabel = Instance.new("TextLabel")
 selectedLabel.Size = UDim2.new(0.92, 0, 0, 22)
 selectedLabel.Position = UDim2.new(0.04, 0, 0, 198)
 selectedLabel.BackgroundTransparency = 1
-selectedLabel.Text = "Выбран: никто"
+selectedLabel.Text = "Selected: none"
 selectedLabel.TextColor3 = Color3.fromRGB(255, 200, 0)
 selectedLabel.Font = Enum.Font.Gotham
 selectedLabel.TextSize = 13
@@ -204,7 +204,7 @@ local infiniteTPToggle = Instance.new("TextButton")
 infiniteTPToggle.Size = UDim2.new(0.92, 0, 0, 35)
 infiniteTPToggle.Position = UDim2.new(0.04, 0, 0, 228)
 infiniteTPToggle.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
-infiniteTPToggle.Text = "АКТИВИРОВАТЬ"
+infiniteTPToggle.Text = "ACTIVATE"
 infiniteTPToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
 infiniteTPToggle.Font = Enum.Font.GothamBold
 infiniteTPToggle.TextSize = 14
@@ -233,9 +233,9 @@ local function updatePlayerList(filterText)
             btn.Parent = playerScroll
             btn.MouseButton1Click:Connect(function()
                 targetPlayerName = plr.Name
-                selectedLabel.Text = "Выбран: " .. plr.Name
+                selectedLabel.Text = "Selected: " .. plr.Name
                 if infiniteTPEnabled then
-                    infiniteTPToggle.Text = "ВКЛЮЧЕНО (к " .. plr.Name .. ")"
+                    infiniteTPToggle.Text = "ENABLED (to " .. plr.Name .. ")"
                 end
                 btn.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
                 task.delay(0.3, function() if btn and btn.Parent then btn.BackgroundColor3 = Color3.fromRGB(40, 40, 40) end end)
@@ -247,7 +247,6 @@ local function updatePlayerList(filterText)
 end
 
 searchBox:GetPropertyChangedSignal("Text"):Connect(function() updatePlayerList(searchBox.Text) end)
-
 local function refreshPlayerList() updatePlayerList(searchBox.Text) end
 Players.PlayerAdded:Connect(refreshPlayerList)
 Players.PlayerRemoving:Connect(refreshPlayerList)
@@ -257,34 +256,34 @@ local function toggleInfiniteTP()
     if infiniteTPEnabled then
         infiniteTPEnabled = false
         infiniteTPToggle.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
-        infiniteTPToggle.Text = "АКТИВИРОВАТЬ"
-        print("❌ Бесконечный TP выключен")
+        infiniteTPToggle.Text = "ACTIVATE"
+        print("❌ Infinite TP disabled")
     else
         if targetPlayerName == "" then
             local text = (searchBox.Text or ""):gsub("^%s+", ""):gsub("%s+$", "")
-            if text ~= "" and text ~= "Поиск игрока..." then
+            if text ~= "" and text ~= "Search player..." then
                 for _, plr in ipairs(Players:GetPlayers()) do
                     if plr ~= lp and plr.Name:lower() == text:lower() then
                         targetPlayerName = plr.Name
-                        selectedLabel.Text = "Выбран: " .. plr.Name
+                        selectedLabel.Text = "Selected: " .. plr.Name
                         break
                     end
                 end
             end
         end
         if targetPlayerName == "" then
-            print("❌ Сначала выберите игрока из списка!")
+            print("❌ First select a player from the list!")
             return
         end
         infiniteTPEnabled = true
         infiniteTPToggle.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
-        infiniteTPToggle.Text = "ВКЛЮЧЕНО (к " .. targetPlayerName .. ")"
-        print("✅ Бесконечный TP к " .. targetPlayerName .. " активирован (ЗА СПИНОЙ)")
+        infiniteTPToggle.Text = "ENABLED (to " .. targetPlayerName .. ")"
+        print("✅ Infinite TP to " .. targetPlayerName .. " activated (behind the back)")
     end
 end
 infiniteTPToggle.MouseButton1Click:Connect(toggleInfiniteTP)
 
--- ====================== ЗАКРЫТИЕ GUI (M) =======================
+-- ====================== CLOSE GUI (M) =======================
 local guiVisible = true
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
@@ -294,7 +293,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
--- ====================== ТЕЛЕПОРТ (N) =======================
+-- ====================== RANDOM TELEPORT (N) =======================
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
     if input.KeyCode == Enum.KeyCode.N then
@@ -312,13 +311,13 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
--- ====================== FLY ПО КЛАВИШЕ R =======================
+-- ====================== FLY WITH R KEY =======================
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
     if input.KeyCode == Enum.KeyCode.R then
         flyEnabled = not flyEnabled
         toggleFly(flyEnabled)
-        print("🟢 Jumper Fly " .. (flyEnabled and "ВКЛЮЧЁН" or "ВЫКЛЮЧЕН") .. " (R)")
+        print("🟢 Jumper Fly " .. (flyEnabled and "ENABLED" or "DISABLED") .. " (R)")
     end
 end)
 
@@ -381,14 +380,17 @@ local function createPlayerESP(player)
         if not humanoid or not humanoid.Parent then return end
         local percent = math.clamp(humanoid.Health / humanoid.MaxHealth, 0, 1)
         healthBar.Size = UDim2.new(percent, 0, 1, 0)
-        if percent > 0.6 then healthBar.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
-        elseif percent > 0.35 then healthBar.BackgroundColor3 = Color3.fromRGB(255, 200, 0)
-        else healthBar.BackgroundColor3 = Color3.fromRGB(255, 60, 60) end
+        if percent > 0.6 then 
+            healthBar.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
+        elseif percent > 0.35 then 
+            healthBar.BackgroundColor3 = Color3.fromRGB(255, 200, 0)
+        else 
+            healthBar.BackgroundColor3 = Color3.fromRGB(255, 60, 60) 
+        end
         nameLabel.Text = string.format("%s [%d]", player.Name, math.floor(humanoid.Health))
     end
     updateHealth()
     local healthConn = humanoid.HealthChanged:Connect(updateHealth)
-
     playerESPObjects[player] = {billboard = billboard, highlight = highlight, healthConn = healthConn}
 end
 
@@ -405,7 +407,11 @@ end
 local function updateAllPlayerESP()
     for _, player in ipairs(Players:GetPlayers()) do
         if player ~= lp then
-            if playerESPEnabled then createPlayerESP(player) else removePlayerESP(player) end
+            if playerESPEnabled then 
+                createPlayerESP(player) 
+            else 
+                removePlayerESP(player) 
+            end
         end
     end
 end
@@ -428,7 +434,9 @@ local function toggleNoClip(state)
         local character = lp.Character
         if character then
             for _, part in ipairs(character:GetDescendants()) do
-                if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then part.CanCollide = true end
+                if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then 
+                    part.CanCollide = true 
+                end
             end
         end
     end
@@ -447,6 +455,7 @@ local function toggleFly(state)
         flyBodyVelocity.MaxForce = Vector3.new(4000, 4000, 4000)
         flyBodyVelocity.Velocity = Vector3.new(0, 0, 0)
         flyBodyVelocity.Parent = root
+
         flyConnection = RunService.Heartbeat:Connect(function()
             if not flyEnabled or not flyBodyVelocity then return end
             local cam = workspace.CurrentCamera
@@ -466,24 +475,20 @@ local function toggleFly(state)
     end
 end
 
--- ====================== FLING ALL (ПОЛНОСТЬЮ ИСПРАВЛЕНО — proximity fling, работает 100%) =======================
+-- ====================== FLING ALL =======================
 local function toggleFlingAll(state)
     flingAllEnabled = state
     if state then
-        -- No-clip (чтобы тебя не откидывало)
         if flingNoClipConnection then flingNoClipConnection:Disconnect() end
         flingNoClipConnection = RunService.Stepped:Connect(function()
             local character = lp.Character
             if character then
                 for _, part in ipairs(character:GetDescendants()) do
-                    if part:IsA("BasePart") then
-                        part.CanCollide = false
-                    end
+                    if part:IsA("BasePart") then part.CanCollide = false end
                 end
             end
         end)
 
-        -- Новый надёжный fling (проверяем расстояние каждый кадр)
         if flingLoopConnection then flingLoopConnection:Disconnect() end
         flingLoopConnection = RunService.Heartbeat:Connect(function()
             if not flingAllEnabled then return end
@@ -491,7 +496,6 @@ local function toggleFlingAll(state)
             if not character then return end
             local root = character:FindFirstChild("HumanoidRootPart")
             if not root then return end
-
             for _, plr in ipairs(Players:GetPlayers()) do
                 if plr ~= lp and plr.Character then
                     local pchar = plr.Character
@@ -511,28 +515,17 @@ local function toggleFlingAll(state)
                 end
             end
         end)
-
-        print("🔥 Fling All ВКЛЮЧЁН (выкидывает ВСЕХ игроков рядом — 100% работает)")
+        print("🔥 Fling All ENABLED (throws ALL nearby players — 100% working)")
     else
-        if flingNoClipConnection then
-            flingNoClipConnection:Disconnect()
-            flingNoClipConnection = nil
-        end
-        if flingLoopConnection then
-            flingLoopConnection:Disconnect()
-            flingLoopConnection = nil
-        end
-
-        -- Восстанавливаем коллизии
+        if flingNoClipConnection then flingNoClipConnection:Disconnect() flingNoClipConnection = nil end
+        if flingLoopConnection then flingLoopConnection:Disconnect() flingLoopConnection = nil end
         local character = lp.Character
         if character then
             for _, part in ipairs(character:GetDescendants()) do
-                if part:IsA("BasePart") then
-                    part.CanCollide = true
-                end
+                if part:IsA("BasePart") then part.CanCollide = true end
             end
         end
-        print("❌ Fling All ВЫКЛЮЧЕН")
+        print("❌ Fling All DISABLED")
     end
 end
 
@@ -561,7 +554,6 @@ local function createESP(prompt)
     TextLabel.TextSize = 14
     TextLabel.Text = prompt.Name .. "\n" .. prompt.Parent.Name
     TextLabel.Parent = Billboard
-
     espBillboards[prompt] = Billboard
 end
 
@@ -570,7 +562,7 @@ local function removeAllESP()
     espBillboards = {}
 end
 
--- ====================== ANTI-FALL & ANTI FALL DAMAGE =======================
+-- ====================== ANTI FALL DAMAGE =======================
 local ANTI_FALL_ENABLED = true
 local CHECK_RATE = 0.20
 local LIFT_SPEED = 18
@@ -583,13 +575,11 @@ local function antiFall(root)
     local now = tick()
     if now - lastAntiFallCheck < CHECK_RATE then return end
     lastAntiFallCheck = now
-
     local rayParams = RaycastParams.new()
     rayParams.FilterDescendantsInstances = {root.Parent}
     rayParams.FilterType = Enum.RaycastFilterType.Exclude
     rayParams.IgnoreWater = true
     local result = workspace:Raycast(root.Position, Vector3.new(0, -CHECK_DISTANCE, 0), rayParams)
-
     if not result then
         if not antiFallBodyVel or not antiFallBodyVel.Parent then
             antiFallBodyVel = Instance.new("BodyVelocity")
@@ -618,19 +608,16 @@ local function toggleAntiFallDamage(state)
                 local root = character:FindFirstChild("HumanoidRootPart")
                 local humanoid = character:FindFirstChild("Humanoid")
                 if not root or not humanoid then return end
-
                 local vel = root.AssemblyLinearVelocity
                 if vel.Y > -50 then
                     if currentPlatform then currentPlatform:Destroy() currentPlatform = nil end
                     return
                 end
-
                 local rayParams = RaycastParams.new()
                 rayParams.FilterDescendantsInstances = {character}
                 rayParams.FilterType = Enum.RaycastFilterType.Exclude
                 rayParams.IgnoreWater = true
                 local result = workspace:Raycast(root.Position, Vector3.new(0, -40, 0), rayParams)
-
                 if result and result.Distance < 22 and tick() - lastPlatformTime > 0.3 then
                     lastPlatformTime = tick()
                     if currentPlatform then currentPlatform:Destroy() end
@@ -643,11 +630,9 @@ local function toggleAntiFallDamage(state)
                     currentPlatform.Parent = workspace
                     local platformY = result.Position.Y + 1.5
                     currentPlatform.CFrame = CFrame.new(root.Position.X, platformY, root.Position.Z)
-
                     root.AssemblyLinearVelocity = Vector3.new(vel.X, 5, vel.Z)
                     humanoid:ChangeState(Enum.HumanoidStateType.Landed)
                     humanoid.PlatformStand = true
-
                     task.delay(0.18, function()
                         if currentPlatform then currentPlatform:Destroy() currentPlatform = nil end
                         if humanoid then humanoid.PlatformStand = false end
@@ -662,7 +647,7 @@ local function toggleAntiFallDamage(state)
 end
 toggleAntiFallDamage(true)
 
--- ====================== БЕСКОНЕЧНЫЙ ТЕЛЕПОРТ =======================
+-- ====================== INFINITE TELEPORT =======================
 local function startInfiniteTP()
     if infiniteTPConnection then infiniteTPConnection:Disconnect() end
     infiniteTPConnection = RunService.Heartbeat:Connect(function()
@@ -712,6 +697,7 @@ RunService.Heartbeat:Connect(function()
 
     for _, prompt in ipairs(workspace:GetDescendants()) do
         if not (prompt:IsA("ProximityPrompt") and prompt.Enabled) then continue end
+
         local target = nil
         local parent = prompt.Parent
         if parent then
@@ -757,7 +743,7 @@ RunService.Heartbeat:Connect(function()
     end
 end)
 
--- Обработка состояний
+-- State Handler
 local lastNoClipState = false
 local lastFlyState = false
 local lastFlingState = false
@@ -774,7 +760,6 @@ RunService.Heartbeat:Connect(function()
         toggleFlingAll(flingAllEnabled)
         lastFlingState = flingAllEnabled
     end
-
     if infiniteTPEnabled then
         startInfiniteTP()
     elseif infiniteTPConnection then
@@ -783,4 +768,4 @@ RunService.Heartbeat:Connect(function()
     end
 end)
 
-print("✅ SCRIPT LOADED - Morrom Hub | FLING ПОЛНОСТЬЮ ИСПРАВЛЕН (выкидывает ВСЕХ игроков рядом 🔥)")
+print("✅ SCRIPT LOADED - Morrom Hub | FLING FULLY FIXED (throws ALL nearby players 🔥)")
